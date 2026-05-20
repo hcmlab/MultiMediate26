@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".xlm_roberta_embeddings.stream~"
+  ],
+  "modalities_dim": [
+    768
+  ],
+  "train_dir": "/mnt/data/noxi-j/train/",
+  "val_dir": "/mnt/data/noxi-j/val/",
+  "full_base_dir": "./results/noxi-j/full_models",
+  "best_hyperparameters": {
+    ".xlm_roberta_embeddings.stream~": {
+      "units1": 16,
+      "units2": 96,
+      "units3": 120,
+      "dropout": 0.35000000000000003,
+      "learning_rate": 0.001,
+      "batch_size": 1024
+    }
+  }
+}

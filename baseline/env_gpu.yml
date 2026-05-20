@@ -1,0 +1,22 @@
+name: mmslurm63
+channels:
+  - nvidia
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10                   # switch to 3.10 for max compatibility
+  - pandas
+  - numpy>=1.20
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - tensorflow                    # from conda-forge
+  - keras-tuner                   # from conda-forge
+  - tqdm
+  - pip # keep pip around for any tiny extras
+  - pip:
+      - tensorflow-probability
+      - tf-keras
+
+

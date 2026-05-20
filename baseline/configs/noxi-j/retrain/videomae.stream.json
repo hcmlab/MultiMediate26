@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".videomae.stream~"
+  ],
+  "modalities_dim": [
+    1408
+  ],
+  "train_dir": "/mnt/data/noxi-j/train/",
+  "val_dir": "/mnt/data/noxi-j/val/",
+  "full_base_dir": "./results/noxi-j/full_models",
+  "best_hyperparameters": {
+    ".videomae.stream~": {
+      "units1": 312,
+      "units2": 336,
+      "units3": 280,
+      "dropout": 0.0,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

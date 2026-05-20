@@ -1,0 +1,20 @@
+Audio Feature Extraction
+========================
+
+Audio features were extracted using the DISCOVER server and the DISCOVER Modules toolkit:
+
+- DISCOVER: https://github.com/hcmlab/discover
+- DISCOVER Modules: https://github.com/hcmlab/discover-modules/
+
+Extracted Features
+------------------
+
+The following features were extracted using the same hyperparameter settings:
+
+- Left Context: 960 ms
+- Window Size: 40 ms
+
+Features:
+- xlm_roberta      : Extracted using DISCOVER
+- w2v_bert_2       : Extracted using DISCOVER
+- eGeMAPSv02       : Extracted (via OpenSMILE) using DISCOVER

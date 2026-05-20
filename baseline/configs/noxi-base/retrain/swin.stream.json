@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".swin.stream~"
+  ],
+  "modalities_dim": [
+    768
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".swin.stream~": {
+      "units1": 304,
+      "units2": 272,
+      "units3": 168,
+      "dropout": 0.2,
+      "learning_rate": 0.001,
+      "batch_size": 256
+    }
+  }
+}

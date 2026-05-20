@@ -1,0 +1,100 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~",
+    ".clip.stream~",
+    ".openpose.stream~",
+    ".audio.w2vbert2_embeddings.stream~",
+    ".xlm_roberta_embeddings.stream~",
+    ".openface2.stream~",
+    ".openface3.stream~",
+    ".dino.stream~",
+    ".swin.stream~",
+    ".videomae.stream~"
+  ],
+  "modalities_dim": [88, 512, 139, 1024, 768, 714, 21, 768, 768, 1408],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".audio.egemapsv2.stream~": {
+      "units1": 272,
+      "units2": 304,
+      "units3": 472,
+      "dropout": 0.2,
+      "learning_rate": 0.0001,
+      "batch_size": 32
+    },
+    ".clip.stream~": {
+      "units1": 40,
+      "units2": 392,
+      "units3": 48,
+      "dropout": 0.15,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    },
+    ".openpose.stream~": {
+      "units1": 408,
+      "units2": 184,
+      "units3": 168,
+      "dropout": 0.4,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    },
+    ".audio.w2vbert2_embeddings.stream~": {
+      "units1": 272,
+      "units2": 304,
+      "units3": 472,
+      "dropout": 0.2,
+      "learning_rate": 0.0001,
+      "batch_size": 32
+    },
+    ".xlm_roberta_embeddings.stream~": {
+      "units1": 56,
+      "units2": 144,
+      "units3": 464,
+      "dropout": 0.15,
+      "learning_rate": 0.001,
+      "batch_size": 1024
+    },
+    ".openface2.stream~": {
+      "units1": 80,
+      "units2": 272,
+      "units3": 24,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    },
+    ".openface3.stream~": {
+      "units1": 360,
+      "units2": 384,
+      "units3": 128,
+      "dropout": 0.35,
+      "learning_rate": 0.01,
+      "batch_size": 32
+    },
+    ".dino.stream~": {
+      "units1": 320,
+      "units2": 408,
+      "units3": 64,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    },
+    ".swin.stream~": {
+      "units1": 40,
+      "units2": 392,
+      "units3": 48,
+      "dropout": 0.15000000000000002,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    },
+    ".videomae.stream~": {
+      "units1": 208,
+      "units2": 64,
+      "units3": 272,
+      "dropout": 0.0,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

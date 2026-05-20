@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".clip.stream~"
+  ],
+  "modalities_dim": [
+    512
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".clip.stream~": {
+      "units1": 80,
+      "units2": 272,
+      "units3": 24,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    }
+  }
+}

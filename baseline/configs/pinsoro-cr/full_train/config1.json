@@ -1,0 +1,37 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~",
+    ".clip.stream~",
+    ".openpose.stream~"
+  ],
+  "modalities_dim": [88, 512, 139],
+  "train_dir": "/mnt/data/pinsoro/train-cr/",
+  "val_dir": "/mnt/data/pinsoro/val-cr/",
+  "full_base_dir": "./results/pinsoro-cr/full_models",
+  "best_hyperparameters": {
+    ".audio.egemapsv2.stream~": {
+      "units1": 312,
+      "units2": 208,
+      "units3": 40,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 2048
+    },
+    ".clip.stream~": {
+      "units1": 312,
+      "units2": 208,
+      "units3": 40,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 2048
+    },
+    ".openpose.stream~": {
+      "units1": 312,
+      "units2": 208,
+      "units3": 40,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 2048
+    }
+  }
+}

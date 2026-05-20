@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".dino.stream~"
+  ],
+  "modalities_dim": [
+    768
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".dino.stream~": {
+      "units1": 272,
+      "units2": 304,
+      "units3": 472,
+      "dropout": 0.2,
+      "learning_rate": 0.0001,
+      "batch_size": 32
+    }
+  }
+}

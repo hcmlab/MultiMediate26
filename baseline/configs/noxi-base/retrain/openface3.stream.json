@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".openface3.stream~"
+  ],
+  "modalities_dim": [
+    21
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".openface3.stream~": {
+      "units1": 16,
+      "units2": 96,
+      "units3": 120,
+      "dropout": 0.35000000000000003,
+      "learning_rate": 0.001,
+      "batch_size": 1024
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "task_type": "classification",
+  "label_heads": {
+    "task_engagement":   {
+        "num_classes": 4,
+        "annotation_suffix": ".task_engagement.annotation.csv",
+        "label_map": {
+            "goaloriented": 0,
+            "aimless": 1,
+            "adultseeking": 2,
+            "noplay": 3
+        }
+    },
+    "social_engagement": {
+        "num_classes": 5,
+        "annotation_suffix": ".social_engagement.annotation.csv" ,
+        "label_map": {
+            "solitary": 0,
+            "onlooker": 1,
+            "parallel": 2,
+            "associative": 3,
+            "cooperative": 4
+        }
+    }
+  }
+}

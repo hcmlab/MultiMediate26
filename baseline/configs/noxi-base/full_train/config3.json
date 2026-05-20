@@ -1,0 +1,41 @@
+{
+  "modalities": [
+    ".dino.stream~",
+    ".swin.stream~",
+    ".videomae.stream~"
+  ],
+  "modalities_dim": [
+    768,
+    768,
+    1408
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".dino.stream~": {
+      "units1": 320,
+      "units2": 408,
+      "units3": 64,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    },
+    ".swin.stream~": {
+      "units1": 40,
+      "units2": 392,
+      "units3": 48,
+      "dropout": 0.15000000000000002,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    },
+    ".videomae.stream~": {
+      "units1": 208,
+      "units2": 64,
+      "units3": 272,
+      "dropout": 0.0,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

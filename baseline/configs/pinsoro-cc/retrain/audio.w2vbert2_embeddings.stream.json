@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".audio.w2vbert2_embeddings.stream~"
+  ],
+  "modalities_dim": [
+    1024
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".audio.w2vbert2_embeddings.stream~": {
+      "units1": 208,
+      "units2": 64,
+      "units3": 272,
+      "dropout": 0.0,
+      "learning_rate": 0.0001,
+      "batch_size": 32
+    }
+  }
+}

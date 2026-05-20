@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".openface2.stream~"
+  ],
+  "modalities_dim": [
+    714
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".openface2.stream~": {
+      "units1": 80,
+      "units2": 272,
+      "units3": 24,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    }
+  }
+}

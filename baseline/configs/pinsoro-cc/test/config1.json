@@ -1,0 +1,17 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~",
+    ".clip.stream~",
+    ".openpose.stream~",
+    ".audio.w2vbert2_embeddings.stream~",
+    ".xlm_roberta_embeddings.stream~",
+    ".openface2.stream~",
+    ".openface3.stream~"
+  ],
+  "modalities_dim": [88, 512, 139, 1024, 768, 714, 21],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "test_dir": "/mnt/data/pinsoro/test-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "engagement_gt": "./engagement-mm26-test/pinsoro/test-cc"
+}

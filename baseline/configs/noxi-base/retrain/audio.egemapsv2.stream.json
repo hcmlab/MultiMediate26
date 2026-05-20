@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~"
+  ],
+  "modalities_dim": [
+    88
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".audio.egemapsv2.stream~": {
+      "units1": 360,
+      "units2": 384,
+      "units3": 128,
+      "dropout": 0.35000000000000003,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

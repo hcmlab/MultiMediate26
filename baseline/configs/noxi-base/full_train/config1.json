@@ -1,0 +1,37 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~",
+    ".clip.stream~",
+    ".openpose.stream~"
+  ],
+  "modalities_dim": [88, 512, 139],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "full_base_dir": "./results/full_models",
+  "best_hyperparameters": {
+    ".audio.egemapsv2.stream~": {
+      "units1": 272,
+      "units2": 304,
+      "units3": 472,
+      "dropout": 0.2,
+      "learning_rate": 0.0001,
+      "batch_size": 32
+    },
+    ".clip.stream~": {
+      "units1": 40,
+      "units2": 392,
+      "units3": 48,
+      "dropout": 0.15,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    },
+    ".openpose.stream~": {
+      "units1": 408,
+      "units2": 184,
+      "units3": 168,
+      "dropout": 0.4,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

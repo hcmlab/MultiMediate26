@@ -1,0 +1,37 @@
+{
+  "modalities": [
+    ".dino.stream~",
+    ".swin.stream~",
+    ".videomae.stream~"
+  ],
+  "modalities_dim": [768, 768, 1408],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".dino.stream~": {
+      "units1": 312,
+      "units2": 208,
+      "units3": 40,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 2048
+    },
+    ".swin.stream~": {
+      "units1": 312,
+      "units2": 208,
+      "units3": 40,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 2048
+    },
+    ".videomae.stream~": {
+      "units1": 360,
+      "units2": 384,
+      "units3": 128,
+      "dropout": 0.35,
+      "learning_rate": 0.01,
+      "batch_size": 32
+    }
+  }
+}

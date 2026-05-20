@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".xlm_roberta_embeddings.stream~"
+  ],
+  "modalities_dim": [
+    768
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cr/",
+  "val_dir": "/mnt/data/pinsoro/val-cr/",
+  "full_base_dir": "./results/pinsoro-cr/full_models",
+  "best_hyperparameters": {
+    ".xlm_roberta_embeddings.stream~": {
+      "units1": 360,
+      "units2": 384,
+      "units3": 128,
+      "dropout": 0.35000000000000003,
+      "learning_rate": 0.001,
+      "batch_size": 32
+    }
+  }
+}

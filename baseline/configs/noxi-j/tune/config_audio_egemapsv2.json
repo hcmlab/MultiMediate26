@@ -1,0 +1,14 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~"
+  ],
+  "modalities_dim": [88],
+  "debug_mode": false,
+  "tuning_subset_frac": 1.0,
+  "training_subset_frac": 1.0,
+  "train_dir": "/mnt/data/noxi-j/train/",
+  "val_dir": "/mnt/data/noxi-j/val/",
+  "tuner_base_dir": "./nn/noxi-j/tuner/tuner_models_regression",
+  "final_base_dir": "./final_models/noxi-j/nn/single_modality",
+  "max_learning_rate": 0.001
+}

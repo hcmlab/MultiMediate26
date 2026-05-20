@@ -1,0 +1,13 @@
+{
+  "modalities": [
+    ".xlm_roberta_embeddings.stream~"
+  ],
+  "modalities_dim": [768],
+  "debug_mode": false,
+  "tuning_subset_frac": 1.0,
+  "training_subset_frac": 1.0,
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "tuner_base_dir": "./nn/pinsoro-cc/tuner/tuner_models_regression",
+  "final_base_dir": "./final_models/pinsoro-cc/nn/single_modality"
+}

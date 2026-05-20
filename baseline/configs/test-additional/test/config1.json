@@ -1,0 +1,31 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~",
+    ".clip.stream~",
+    ".openpose.stream~",
+    ".audio.w2vbert2_embeddings.stream~",
+    ".xlm_roberta_embeddings.stream~",
+    ".openface2.stream~",
+    ".openface3.stream~",
+    ".dino.stream~",
+    ".swin.stream~",
+    ".videomae.stream~"
+  ],
+  "modalities_dim": [
+    88,
+    512,
+    139,
+    1024,
+    768,
+    714,
+    21,
+    768,
+    768,
+    1408
+  ],
+  "train_dir": "/mnt/data/noxi/train/",
+  "val_dir": "/mnt/data/noxi/val/",
+  "test_dir": "/mnt/data/noxi/test-additional/",
+  "full_base_dir": "./results/full_models",
+  "engagement_gt": "./engagement-mm26-test/noxi/test-additional"
+}

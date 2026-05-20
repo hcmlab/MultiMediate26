@@ -1,0 +1,13 @@
+{
+  "modalities": [
+    ".dino.stream~"
+  ],
+  "modalities_dim": [768],
+  "debug_mode": false,
+  "tuning_subset_frac": 1.0,
+  "training_subset_frac": 1.0,
+  "train_dir": "/mnt/data/pinsoro/train-cr/",
+  "val_dir": "/mnt/data/pinsoro/val-cr/",
+  "tuner_base_dir": "./nn/pinsoro-cr/tuner/tuner_models_regression",
+  "final_base_dir": "./final_models/pinsoro-cr/nn/single_modality"
+}

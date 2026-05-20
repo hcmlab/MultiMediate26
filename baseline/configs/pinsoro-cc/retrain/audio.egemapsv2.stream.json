@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".audio.egemapsv2.stream~"
+  ],
+  "modalities_dim": [
+    88
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".audio.egemapsv2.stream~": {
+      "units1": 504,
+      "units2": 488,
+      "units3": 72,
+      "dropout": 0.45,
+      "learning_rate": 0.001,
+      "batch_size": 1024
+    }
+  }
+}

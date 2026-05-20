@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".openpose.stream~"
+  ],
+  "modalities_dim": [
+    139
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".openpose.stream~": {
+      "units1": 248,
+      "units2": 40,
+      "units3": 392,
+      "dropout": 0.15000000000000002,
+      "learning_rate": 0.0001,
+      "batch_size": 1024
+    }
+  }
+}

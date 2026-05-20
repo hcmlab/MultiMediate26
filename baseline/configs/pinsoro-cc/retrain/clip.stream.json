@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".clip.stream~"
+  ],
+  "modalities_dim": [
+    512
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".clip.stream~": {
+      "units1": 360,
+      "units2": 248,
+      "units3": 208,
+      "dropout": 0.45,
+      "learning_rate": 0.0001,
+      "batch_size": 512
+    }
+  }
+}

@@ -1,0 +1,7 @@
+/baseline/logs/
+.idea
+*.npy
+*.csv
+*.png
+.vscode
+/baseline/nn

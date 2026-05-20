@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".audio.w2vbert2_embeddings.stream~"
+  ],
+  "modalities_dim": [
+    1024
+  ],
+  "train_dir": "/mnt/data/noxi-j/train/",
+  "val_dir": "/mnt/data/noxi-j/val/",
+  "full_base_dir": "./results/noxi-j/full_models",
+  "best_hyperparameters": {
+    ".audio.w2vbert2_embeddings.stream~": {
+      "units1": 80,
+      "units2": 272,
+      "units3": 24,
+      "dropout": 0.4,
+      "learning_rate": 0.0001,
+      "batch_size": 128
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "modalities": [
+    ".dino.stream~"
+  ],
+  "modalities_dim": [
+    768
+  ],
+  "train_dir": "/mnt/data/pinsoro/train-cc/",
+  "val_dir": "/mnt/data/pinsoro/val-cc/",
+  "full_base_dir": "./results/pinsoro-cc/full_models",
+  "best_hyperparameters": {
+    ".dino.stream~": {
+      "units1": 344,
+      "units2": 296,
+      "units3": 40,
+      "dropout": 0.05,
+      "learning_rate": 0.001,
+      "batch_size": 1024
+    }
+  }
+}
