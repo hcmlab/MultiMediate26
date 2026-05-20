@@ -50,28 +50,6 @@ method.
 | *Text*                      |                 |                   |                 |                   |            |
 | &nbsp;&nbsp;XLM RoBERTa     | **0.1609**      | **0.2620**        | 0.0191          | 0.0009            | 0.1107     |
 
----
-
-
-
-## 2025 Results
-
-| Feature set              | NOXI  | NOXI (Add.) | NOXI-J | MPIIGI | Combined |
-|--------------------------|-------|-------------|--------|--------|----------|
-| *Video*                  |       |             |        |        |          |
-| &nbsp;&nbsp;OpenFace 2.0    | 0.22  | 0.09        | 0.00   | 0.01   | 0.08     |
-| &nbsp;&nbsp;OpenPose        | 0.47  | 0.39        | 0.03   | 0.03   | 0.23     |
-| &nbsp;&nbsp;CLIP            | 0.48  | 0.38        | 0.04   | 0.00   | 0.23     |
-| &nbsp;&nbsp;DINO            | 0.29  | 0.06        | 0.14   | 0.08   | 0.14     |
-| &nbsp;&nbsp;SwinTransformer | 0.54  | 0.52        | 0.07   | -0.01  | 0.28     |
-| &nbsp;&nbsp;VideoMAE        | 0.66  | 0.50        | 0.07   | 0.21   | 0.36     |
-| *Voice*                  |       |             |        |        |          |
-| &nbsp;&nbsp;eGeMAPS v2      | **0.57** | **0.47** | **0.13** | **0.44** | **0.40** |
-| &nbsp;&nbsp;w2vBERT2        | 0.55  | 0.45        | 0.10   | 0.05   | 0.29     |
-| *Text*                   |       |             |        |        |          |
-| &nbsp;&nbsp;XLM RoBERTa     | 0.41  | 0.28        | 0.08   | 0.01   | 0.20     |
-
-
 
 
 ## Feature Extraction
@@ -133,20 +111,8 @@ baseline/
 │       └── test/
 │
 ├── final_models/                          # Tuned model checkpoints (.keras) per dataset
-│   ├── nn/single_modality/                # noxi-base models
-│   ├── noxi-j/nn/single_modality/
-│   ├── pinsoro-cc/nn/single_modality/
-│   └── pinsoro-cr/nn/single_modality/
 │
 └── results/                               # Output folder for results
-    ├── 2025/                              # Archive of 2025 challenge results
-    ├── full_models/                       # Retrained full models + CCC/MSE scores
-    ├── noxi-base/                         # Test results per dataset
-    ├── noxi-j/
-    ├── pinsoro-cc/
-    ├── pinsoro-cr/
-    ├── mpiigroupinteraction/
-    └── test-additional/
 
 ````
 
@@ -248,7 +214,7 @@ Used by steps 3 and 4. Lists all modalities and points to the test split and gro
 
 ## 3. Running the Pipeline
 
-The pipeline runs in 5 steps. Use the `run_all_*.sh` scripts to submit all jobs for all datasets at once, or submit individual SLURM jobs manually.
+The pipeline runs in 5 steps. Use the `run_all_*.sh` scripts to submit all jobs for all datasets at once, or submit individual SLURM jobs manually. Without test set annotations, only the first 2 steps can be run.
 
 ### Step 1 — Hyperparameter tuning
 
