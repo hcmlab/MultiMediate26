@@ -4,13 +4,194 @@ Extracts best hyperparameters from completed tuning runs and writes them to a
 combined JSON file. Also generates per-feature retrain configs for use with
 2_RetrainNN_full.py. Expects log directories with structure
 {dataset}/{modality}/{job_id}/best_hyperparameters.json.
+
+Also writes results_tune_val.md with the best val metrics per modality using
+the same table format as 5_combine_results.py.
 """
 
 import re
 import json
+import math
 import argparse
 from pathlib import Path
 from collections import defaultdict
+
+
+# ---------------------------------------------------------------------------
+# Markdown table configuration (mirrors 5_combine_results.py)
+# ---------------------------------------------------------------------------
+
+REGRESSION_DATASETS: list[tuple[str, str]] = [
+    ("noxi",                 "NOXI"),
+    ("test-additional",      "NOXI (Add.)"),
+    ("noxi-j",               "NOXI-J"),
+    ("mpiigroupinteraction", "MPIIGI"),
+]
+
+CLASSIFICATION_DATASETS: list[tuple[str, str]] = [
+    ("pinsoro-cc:h0", "Pinsoro-CC H1"),
+    ("pinsoro-cc:h1", "Pinsoro-CC H2"),
+    ("pinsoro-cr:h0", "Pinsoro-CR H1"),
+    ("pinsoro-cr:h1", "Pinsoro-CR H2"),
+]
+
+MODALITY_ORDER: list[tuple[str, str, str]] = [
+    ("openface2.stream",                 "Video", "OpenFace 2.0"),
+    ("openface3.stream",                 "Video", "OpenFace 3.0"),
+    ("openpose.stream",                  "Video", "OpenPose"),
+    ("clip.stream",                      "Video", "CLIP"),
+    ("dino.stream",                      "Video", "DINO"),
+    ("swin.stream",                      "Video", "SwinTransformer"),
+    ("videomae.stream",                  "Video", "VideoMAE"),
+    ("audio.egemapsv2.stream",           "Voice", "eGeMAPS v2"),
+    ("audio.w2vbert2_embeddings.stream", "Voice", "w2vBERT2"),
+    ("xlm_roberta_embeddings.stream",    "Text",  "XLM RoBERTa"),
+]
+
+
+# ---------------------------------------------------------------------------
+# Markdown helpers
+# ---------------------------------------------------------------------------
+
+def _mean_finite(values: list) -> float:
+    valid = [v for v in values if v is not None and not math.isnan(v)]
+    return sum(valid) / len(valid) if valid else math.nan
+
+
+def _fmt(val, decimals: int = 4) -> str:
+    if val is None:
+        return "-"
+    if isinstance(val, float) and math.isnan(val):
+        return "nan"
+    return f"{val:.{decimals}f}"
+
+
+def _apply_bold_per_col(rows: list[tuple]) -> list[tuple]:
+    if not rows:
+        return rows
+    n_cols = len(rows[0][2])
+    best_val: list = [None] * n_cols
+    best_row: list = [-1] * n_cols
+
+    for i, (_, _, formatted) in enumerate(rows):
+        for j, s in enumerate(formatted):
+            if s in ("-", "nan"):
+                continue
+            try:
+                v = float(s.strip("*"))
+            except ValueError:
+                continue
+            if best_val[j] is None or v > best_val[j]:
+                best_val[j] = v
+                best_row[j] = i
+
+    new_rows = []
+    for i, (cat, name, formatted) in enumerate(rows):
+        new_fmt = list(formatted)
+        for j in range(n_cols):
+            if best_row[j] == i and new_fmt[j] not in ("-", "nan"):
+                new_fmt[j] = f"**{new_fmt[j]}**"
+        new_rows.append((cat, name, new_fmt))
+    return new_rows
+
+
+def _render_md_table(col_headers: list[str], rows: list[tuple]) -> str:
+    indent = "&nbsp;&nbsp;"
+    feat_header = "Feature set"
+
+    feat_w = max(
+        len(feat_header),
+        max(len(f"*{cat}*") for cat, _, _ in rows),
+        max(len(indent + name) for _, name, _ in rows),
+    )
+    val_ws = [
+        max(len(h), max(len(r[2][j]) for r in rows))
+        for j, h in enumerate(col_headers)
+    ]
+
+    def pad(s: str, w: int) -> str:
+        return s.ljust(w)
+
+    header = (
+        "| " + pad(feat_header, feat_w)
+        + " | " + " | ".join(pad(h, val_ws[j]) for j, h in enumerate(col_headers))
+        + " |"
+    )
+    sep = (
+        "| " + "-" * feat_w
+        + " | " + " | ".join("-" * w for w in val_ws)
+        + " |"
+    )
+
+    lines = [header, sep]
+    current_cat: str | None = None
+
+    for category, display_name, formatted in rows:
+        if category != current_cat:
+            current_cat = category
+            empty_cells = " | ".join(" " * w for w in val_ws)
+            lines.append("| " + pad(f"*{category}*", feat_w) + " | " + empty_cells + " |")
+        vals = " | ".join(pad(v, val_ws[j]) for j, v in enumerate(formatted))
+        lines.append("| " + pad(indent + display_name, feat_w) + " | " + vals + " |")
+
+    return "\n".join(lines)
+
+
+def build_tune_table(
+    flat: dict[str, dict],
+    datasets: list[tuple[str, str]],
+) -> str:
+    """
+    Build a markdown table from flat {dataset: {raw_modality: float}} results.
+    raw_modality keys are in the '.modality~' format written by the tuner.
+    """
+    col_headers = [label for _, label in datasets] + ["Combined"]
+    rows = []
+    for mod_key, category, display_name in MODALITY_ORDER:
+        raw_key = f".{mod_key}~"
+        vals = [flat.get(ds_key, {}).get(raw_key) for ds_key, _ in datasets]
+        combined = _mean_finite(vals)
+        formatted = [_fmt(v) for v in vals + [combined]]
+        rows.append((category, display_name, formatted))
+    rows = _apply_bold_per_col(rows)
+    return _render_md_table(col_headers, rows)
+
+
+def write_markdown_tune(
+    ccc_results: dict[str, dict],
+    acc_results: dict[str, dict],
+    kappa_results: dict[str, dict],
+    output_path: str,
+) -> None:
+    reg_table   = build_tune_table(ccc_results,   REGRESSION_DATASETS)
+    kappa_table = build_tune_table(kappa_results, CLASSIFICATION_DATASETS)
+    acc_table   = build_tune_table(acc_results,   CLASSIFICATION_DATASETS)
+
+    content = "\n".join([
+        "# Tuning Validation Results",
+        "",
+        "## Regression Datasets (CCC)",
+        "",
+        "Combined is the mean over available (non-nan) datasets per feature set.",
+        "",
+        reg_table,
+        "",
+        "## Classification Datasets (Cohen's Kappa)",
+        "",
+        "Combined is the mean over all columns.",
+        "",
+        kappa_table,
+        "",
+        "## Classification Datasets (Accuracy)",
+        "",
+        "Combined is the mean over all columns.",
+        "",
+        acc_table,
+        "",
+    ])
+
+    Path(output_path).write_text(content, encoding="utf-8")
+    print(f"Written to '{output_path}'")
 
 
 HYPERPARAMS_KEYS = {"units1", "units2", "units3", "dropout", "learning_rate", "batch_size"}
@@ -50,6 +231,11 @@ def parse_args():
         "--configs_dir", type=str, default="configs",
         metavar="DIR",
         help="Root configs directory for writing per-feature retrain configs (default: configs)"
+    )
+    parser.add_argument(
+        "--output_md", type=str, default="results_tune_val.md",
+        metavar="FILE",
+        help="Output markdown file (default: results_tune_val.md)"
     )
     return parser.parse_args()
 
@@ -300,15 +486,17 @@ def collect_all(
     (newest) job_id wins.
 
     Returns:
-        combined     -- {dataset: {modality: {param: value, ...}}}
-        ccc_results  -- {dataset: {modality: float}}
-        mse_results  -- {dataset: {modality: float}}
-        acc_results  -- {dataset: {modality: float}}  (mean across heads)
+        combined       -- {dataset: {modality: {param: value, ...}}}
+        ccc_results    -- {dataset: {modality: float}}
+        mse_results    -- {dataset: {modality: float}}
+        acc_results    -- {dataset:hN: {modality: float}}  (one entry per head)
+        kappa_results  -- {dataset:hN: {modality: float}}  (one entry per head)
     """
     result: dict[str, dict] = defaultdict(dict)
     ccc_results: dict[str, dict] = defaultdict(dict)
     mse_results: dict[str, dict] = defaultdict(dict)
     acc_results: dict[str, dict] = defaultdict(dict)
+    kappa_results: dict[str, dict] = defaultdict(dict)
     # best_job_id[dataset][modality] = highest job_id seen so far (int)
     best_job_id: dict[str, dict] = defaultdict(dict)
 
@@ -404,20 +592,33 @@ def collect_all(
                                 for v in acc_file.read_text(encoding="utf-8").splitlines()
                                 if v.strip()
                             ]
-                            if vals:
-                                acc_results[dataset][modality] = sum(vals) / len(vals)
+                            for i, v in enumerate(vals):
+                                acc_results[f"{dataset}:h{i}"][modality] = v
                         except (OSError, ValueError) as exc:
                             print(f"  Warning: cannot read accuracy from '{acc_file}': {exc}")
 
+                    kappa_file = job_dir / "final_kappa.txt"
+                    if kappa_file.exists():
+                        try:
+                            vals = [
+                                float(v)
+                                for v in kappa_file.read_text(encoding="utf-8").splitlines()
+                                if v.strip()
+                            ]
+                            for i, v in enumerate(vals):
+                                kappa_results[f"{dataset}:h{i}"][modality] = v
+                        except (OSError, ValueError) as exc:
+                            print(f"  Warning: cannot read kappa from '{kappa_file}': {exc}")
+
                     print(f"  Loaded  {dataset} / {modality}  (job {job_dir.name})")
 
-    return dict(result), dict(ccc_results), dict(mse_results), dict(acc_results)
+    return dict(result), dict(ccc_results), dict(mse_results), dict(acc_results), dict(kappa_results)
 
 
 def main():
     args = parse_args()
 
-    combined, ccc_results, mse_results, acc_results = collect_all(args.logs_dirs)
+    combined, ccc_results, mse_results, acc_results, kappa_results = collect_all(args.logs_dirs)
     combined = apply_modality_order(combined, args.slurm_dir)
 
     print(f"\nWriting '{args.output}' ...")
@@ -430,13 +631,19 @@ def main():
     for dataset, modalities in combined.items():
         print(f"  {dataset}  ({len(modalities)} modality/ies)")
         for mod in modalities:
-            ccc = ccc_results.get(dataset, {}).get(mod)
-            mse = mse_results.get(dataset, {}).get(mod)
-            acc = acc_results.get(dataset, {}).get(mod)
-            ccc_str = f"  CCC={ccc:.4f}" if ccc is not None else ""
-            mse_str = f"  MSE={mse:.4f}" if mse is not None else ""
-            acc_str = f"  Acc={acc:.4f}" if acc is not None else ""
-            print(f"    {mod}{ccc_str}{mse_str}{acc_str}")
+            ccc   = ccc_results.get(dataset, {}).get(mod)
+            mse   = mse_results.get(dataset, {}).get(mod)
+            acc_per_head   = [(i, v) for i in range(10)
+                              if (v := acc_results.get(f"{dataset}:h{i}", {}).get(mod)) is not None]
+            kappa_per_head = [(i, v) for i in range(10)
+                              if (v := kappa_results.get(f"{dataset}:h{i}", {}).get(mod)) is not None]
+            ccc_str   = f"  CCC={ccc:.4f}" if ccc is not None else ""
+            mse_str   = f"  MSE={mse:.4f}" if mse is not None else ""
+            acc_str   = ("  " + "  ".join(f"Acc_h{i}={v:.4f}"   for i, v in acc_per_head))   if acc_per_head   else ""
+            kappa_str = ("  " + "  ".join(f"Kappa_h{i}={v:.4f}" for i, v in kappa_per_head)) if kappa_per_head else ""
+            print(f"    {mod}{ccc_str}{mse_str}{acc_str}{kappa_str}")
+
+    write_markdown_tune(ccc_results, acc_results, kappa_results, args.output_md)
 
 
 if __name__ == "__main__":

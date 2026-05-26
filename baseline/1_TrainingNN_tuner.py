@@ -12,7 +12,7 @@ import pandas as pd
 import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.utils import shuffle, class_weight as sklearn_cw
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score
 import keras_tuner as kt
 from keras import layers, models
 from keras_tuner import HyperModel
@@ -125,9 +125,10 @@ class MultimediateHyperModelPinsoro(MultimediateHyperModelBase):
 def load_data_for_modality(train_dir, val_dir, modality, feat_dim, is_classification, dataset_config):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
-        for dirpath, _, files in os.walk(root_dir):
+        for dirpath, dirnames, files in os.walk(root_dir):
+            dirnames.sort()
             session_id = os.path.basename(dirpath)
-            for fname in files:
+            for fname in sorted(files):
                 key = f"{fname.split('.')[0]};{session_id}"
                 full_path = os.path.join(dirpath, fname)
                 if modality in fname:
@@ -242,6 +243,7 @@ def main():
     random.seed(SEED)
     np.random.seed(SEED)
     tf.random.set_seed(SEED)
+    tf.config.experimental.enable_op_determinism()
 
     # Unpack config vars
     modalities        = config['modalities']
@@ -373,7 +375,7 @@ def main():
             factor=3,
             directory=os.path.join(tuner_base_dir, dataset_name),
             project_name=modality_clean,
-            overwrite=False,
+            overwrite=True,
             seed=SEED)
 
         early_stop_tuner = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=2 if DEBUG_MODE else 3, restore_best_weights=True)
@@ -508,12 +510,13 @@ def evaluate_model(model, Xva_norm, yva, modality, tb_logdir, best_batch_size, l
     if is_classification:
         n_heads = len(yva)
         ypred_classes = [np.argmax(ypred[i], axis=1) for i in range(n_heads)]
-        accs = [accuracy_score(yva[i], ypred_classes[i]) for i in range(n_heads)]
-        f1s = [f1_score(yva[i], ypred_classes[i], average='weighted') for i in range(n_heads)]
+        accs    = [accuracy_score(yva[i], ypred_classes[i]) for i in range(n_heads)]
+        f1s     = [f1_score(yva[i], ypred_classes[i], average='weighted') for i in range(n_heads)]
+        kappas  = [cohen_kappa_score(yva[i], ypred_classes[i]) for i in range(n_heads)]
         names = head_names if head_names is not None else [f"Head {i}" for i in range(n_heads)]
         logmsg(f"Results for {modality}:")
         for i in range(n_heads):
-            logmsg(f"  {names[i]} - Accuracy: {accs[i]:.4f}, F1-Score: {f1s[i]:.4f}")
+            logmsg(f"  {names[i]} - Accuracy: {accs[i]:.4f}, F1-Score: {f1s[i]:.4f}, Kappa: {kappas[i]:.4f}")
         np.save(os.path.join(tb_logdir, 'yva.npy'), np.column_stack(yva))
         np.save(os.path.join(tb_logdir, 'ypred.npy'), np.column_stack(ypred))
         with open(os.path.join(tb_logdir, 'final_f1.txt'), 'w') as f:
@@ -522,6 +525,9 @@ def evaluate_model(model, Xva_norm, yva, modality, tb_logdir, best_batch_size, l
         with open(os.path.join(tb_logdir, 'final_accuracy.txt'), 'w') as f:
             for acc in accs:
                 f.write(str(acc) + '\n')
+        with open(os.path.join(tb_logdir, 'final_kappa.txt'), 'w') as f:
+            for kappa in kappas:
+                f.write(str(kappa) + '\n')
 
     else:
         ypred_sq = np.squeeze(ypred)

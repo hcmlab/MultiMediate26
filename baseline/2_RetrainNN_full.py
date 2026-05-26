@@ -51,9 +51,10 @@ def load_config(path):
 def load_data_for_modality(train_dir, val_dir, modality, feat_dim):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
-        for dirpath, _, files in os.walk(root_dir):
+        for dirpath, dirnames, files in os.walk(root_dir):
+            dirnames.sort()
             session_id = os.path.basename(dirpath)
-            for fname in files:
+            for fname in sorted(files):
                 key = f"{fname.split('.')[0]};{session_id}"
                 full_path = os.path.join(dirpath, fname)
                 if modality in fname:
@@ -110,9 +111,10 @@ def build_model(input_shape, hps):
 def load_classification_data(train_dir, val_dir, modality, feat_dim, dataset_config):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
-        for dirpath, _, files in os.walk(root_dir):
+        for dirpath, dirnames, files in os.walk(root_dir):
+            dirnames.sort()
             session_id = os.path.basename(dirpath)
-            for fname in files:
+            for fname in sorted(files):
                 key = f"{fname.split('.')[0]};{session_id}"
                 full_path = os.path.join(dirpath, fname)
                 if modality in fname:
@@ -201,6 +203,7 @@ def main():
     random.seed(SEED)
     np.random.seed(SEED)
     tf.random.set_seed(SEED)
+    tf.config.experimental.enable_op_determinism()
 
     dataset_configpath = os.path.join(os.path.dirname(os.path.dirname(args.config)), 'dataset-config.json')
     dataset_config = {}

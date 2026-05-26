@@ -7,10 +7,9 @@ In this repository, we share the baseline implementation, baseline results, as w
 We evaluated all our feature sets on all available test datasets. Models tested on NoXI, NoXI (Additional Languages),
 and MPIIGroupInteraction were trained on NoXI. Models tested on NoXI-J were trained on NoXI-J.
 
+## Test Set Results (CCC)
 
-
-## 2026 Regression Datasets (CCC)
-
+We use the best performing model on the test set for our baseline performance.
 
 | Feature set                 | NOXI       | NOXI (Add.) | NOXI-J     | MPIIGI     | Combined   |
 | --------------------------- | ---------- | ----------- | ---------- | ---------- | ---------- |
@@ -32,18 +31,20 @@ As eGeMAPs v2 achieves the best combined performance, please at least always com
 method.
 
 
-## Classification Datasets (Cohen's Kappa)
+## Test Set Results (Cohen's Kappa)
+
+We use the best performing model on each pinsoro subset for our classification task baseline.
 
 | Feature set                 | Pinsoro-CC Task | Pinsoro-CC Social | Pinsoro-CR Task | Pinsoro-CR Social | Combined   |
 | --------------------------- | --------------- | ----------------- | --------------- | ----------------- | ---------- |
 | *Video*                     |                 |                   |                 |                   |            |
 | &nbsp;&nbsp;OpenFace 2.0    | 0.0583          | 0.0836            | 0.5309          | 0.0944            | 0.1918     |
 | &nbsp;&nbsp;OpenFace 3.0    | 0.0964          | 0.1379            | 0.5322          | 0.0863            | 0.2132     |
-| &nbsp;&nbsp;OpenPose        | 0.0332          | 0.0568            | **0.7106**      | 0.0007            | 0.2003     |
+| &nbsp;&nbsp;OpenPose        | 0.0332          | 0.0568            | 0.7106      | 0.0007            | 0.2003     |
 | &nbsp;&nbsp;CLIP            | 0.1245          | 0.0668            | 0.6752          | 0.0540            | **0.2301** |
 | &nbsp;&nbsp;DINO            | 0.0729          | 0.0579            | 0.5499          | 0.1398            | 0.2051     |
-| &nbsp;&nbsp;SwinTransformer | 0.0844          | 0.0411            | 0.6449          | 0.0916            | 0.2155     |
-| &nbsp;&nbsp;VideoMAE        | 0.1347          | 0.1196            | 0.4226          | **0.1724**        | 0.2123     |
+| &nbsp;&nbsp;SwinTransformer | 0.0844          | 0.0411            | **0.6449**          | **0.0916**            | 0.2155     |
+| &nbsp;&nbsp;VideoMAE        | 0.1347          | 0.1196            | 0.4226          | 0.1724        | 0.2123     |
 | *Voice*                     |                 |                   |                 |                   |            |
 | &nbsp;&nbsp;eGeMAPS v2      | 0.0247          | 0.2126            | 0.0403          | 0.0078            | 0.0713     |
 | &nbsp;&nbsp;w2vBERT2        | 0.0549          | 0.0920            | 0.1199          | -0.0055           | 0.0653     |
