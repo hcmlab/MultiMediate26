@@ -79,17 +79,19 @@ baseline/
 ├── 2.1_RetrainResultExtraction.py         # Step 2.1: Extract retrain results
 ├── 3_TestingNN_infer_plot.py              # Step 3: Inference and prediction plots
 ├── 4_TestingNN_fairness_per_session.py    # Step 4: Per-session fairness evaluation
-├── 5_combine_results.py                   # Step 5: Combine results across datasets
+├── 5_CreateResulttable.py                 # Step 5: Recompute metrics from predictions/GT and generate markdown result table
 │
 ├── run_1_tuner_noxi.slurm                 # SLURM submission scripts for step 1
 ├── run_1_tuner_noxi_j.slurm
+├── run_1_tuner_pinsoro.slurm
 ├── run_1_tuner_pinsoro_cc.slurm
+├── run_1_tuner_pinsoro_cc_videomae.slurm
 ├── run_1_tuner_pinsoro_cr.slurm
 ├── run_2_full_trainer_noxi.slurm          # SLURM submission scripts for step 2
 ├── run_2_full_trainer_noxij.slurm
+├── run_2_full_trainer_pinsoro.slurm
 ├── run_2_full_trainer_pinsoro_cc.slurm
 ├── run_2_full_trainer_pinsoro_cr.slurm
-├── run_2.1_retrain_result_extraction.slurm
 ├── run_3_test_plots.slurm
 ├── run_4_test_fairness_allmod_psess.slurm
 ├── run_all_1.sh ... run_all_4.sh          # Convenience scripts to submit all jobs
@@ -269,11 +271,18 @@ bash run_all_4.sh
 sbatch run_4_test_fairness_allmod_psess.slurm configs/noxi-base/test/config1.json
 ```
 
-### Step 5 — Combine results
+### Step 5 — Create result table
+
+Recomputes CCC (regression) and Cohen's Kappa / Accuracy (classification) metrics directly from prediction and ground-truth CSV files, and writes a markdown result table.
 
 ```sh
-python 5_combine_results.py
+python 5_CreateResulttable.py \
+    --results_dir results/2026 \
+    --gt_root ./engagement-mm26-test \
+    --output ../results.md
 ```
+
+All arguments are optional and default to the values shown above.
 
 ---
 

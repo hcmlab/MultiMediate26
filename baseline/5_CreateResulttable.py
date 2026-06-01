@@ -1,21 +1,4 @@
 #!/usr/bin/env python3
-"""
-Recomputes metrics directly from prediction and ground-truth CSV files,
-following the same logic as the official evaluation script (main.py).
-Produces the same markdown result table as script 5.
-
-Prediction files (written by script 4):
-  {results_dir}/test_prediction_files/{dataset}/{tag}/{session}/{role}.engagement.pred.csv
-  {results_dir}/test_prediction_files/{dataset}/{tag}/{session}/{role}.{type}.pred.csv
-
-Ground-truth annotation files:
-  {gt_root}/noxi/test-base/{session}/{role}.engagement.annotation.csv
-  {gt_root}/noxi/test-additional/{session}/{role}.engagement.annotation.csv
-  {gt_root}/noxi-j/test/{session}/{role}.engagement.annotation.csv
-  {gt_root}/mpiigroupinteraction/test/{session}/{role}.engagement.annotation.csv
-  {gt_root}/pinsoro/test-cc/{session}/{role}.{type}.annotation.csv
-  {gt_root}/pinsoro/test-cr/{session}/{role}.{type}.annotation.csv
-"""
 
 from __future__ import annotations
 
