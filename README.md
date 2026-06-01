@@ -39,12 +39,12 @@ We use the best performing model on each pinsoro subset for our classification t
 | Feature set                 | Pinsoro-CC Social | Pinsoro-CC Task | Pinsoro-CR Social | Pinsoro-CR Task | Combined   |
 | --------------------------- | ----------------- | --------------- | ----------------- | --------------- | ---------- |
 | *Video*                     |                   |                 |                   |                 |            |
-| &nbsp;&nbsp;OpenFace 2.0    | 0.0776            | 0.0583          | -0.0118           | **0.2463**      | 0.0926     |
+| &nbsp;&nbsp;OpenFace 2.0    | 0.0776            | 0.0583          | -0.0118           | 0.2463      | 0.0926     |
 | &nbsp;&nbsp;OpenFace 3.0    | 0.1250            | 0.0980          | 0.0164            | 0.1715          | 0.1027     |
 | &nbsp;&nbsp;OpenPose        | 0.0615            | 0.0332          | -0.0261           | 0.2090          | 0.0694     |
 | &nbsp;&nbsp;CLIP            | 0.0933            | 0.1245          | -0.0216           | 0.1601          | 0.0891     |
 | &nbsp;&nbsp;DINO            | 0.0752            | 0.0729          | 0.0121            | 0.0826          | 0.0607     |
-| &nbsp;&nbsp;SwinTransformer | 0.0905            | 0.0844          | **0.0901**        | 0.2426          | **0.1269** |
+| &nbsp;&nbsp;SwinTransformer | 0.0905            | 0.0844          | **0.0901**        | **0.2426**          | **0.1269** |
 | &nbsp;&nbsp;VideoMAE        | 0.1436            | 0.1347          | -0.0191           | 0.0465          | 0.0764     |
 | *Voice*                     |                   |                 |                   |                 |            |
 | &nbsp;&nbsp;eGeMAPS v2      | 0.1320            | 0.0207          | -0.0188           | -0.0262         | 0.0269     |
