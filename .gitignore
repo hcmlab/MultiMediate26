@@ -1,7 +1,20 @@
+# Generated outputs / model artifacts
 /baseline/logs/
-.idea
+/baseline/nn/
+/baseline/results/
+/baseline/final_models/
+*.h5
+*.keras
 *.npy
 *.csv
 *.png
+
+# IDE
+.idea
 .vscode
-/baseline/nn
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

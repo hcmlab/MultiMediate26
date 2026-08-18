@@ -1,5 +1,9 @@
 import sys
-sys.path.append('/data/stars/user/adhawan/ImageBind-main/imagebind/') # to link to updated dataloader
+import os
+
+# Set IMAGEBIND_PATH to the imagebind/ subdirectory of your ImageBind-main clone,
+# or export the environment variable before running this script.
+sys.path.append(os.environ.get('IMAGEBIND_PATH', '/path/to/ImageBind-main/imagebind/'))
 import data
 
 import torch
@@ -7,14 +11,16 @@ from imagebind.models import imagebind_model
 from imagebind.models.imagebind_model import ModalityType
 import pandas as pd
 import torch.nn as nn
-import os
 import numpy as np
 import pathlib
 from pathlib import Path
 
 
-OUTPUT_DIR = '/data/stars/user/adhawan/features_extracted/ImageBind/mpiigi/'
-base_path = Path('/data/stars/user/mbalazia/datasets/mpiigi/')
+# Set these to your local paths or export as environment variables:
+#   OUTPUT_DIR  - where extracted .npy features will be saved
+#   DATA_PATH   - root directory containing video files
+OUTPUT_DIR = os.environ.get('OUTPUT_DIR', '/path/to/output/features/')
+base_path = Path(os.environ.get('DATA_PATH', '/path/to/dataset/'))
 model = imagebind_model.imagebind_huge(pretrained=True)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Check if multiple GPUs are available

@@ -59,7 +59,9 @@ if __name__ == '__main__':
     
     parser.add_argument('--video-path', type=str)
     parser.add_argument('--input-size', type=int, default=518)
-    parser.add_argument('--outdir', type=str, default='/data/stars/user/smajhi/AD/feature_extraction/RGB_feature/VidMAEV2/Features/Blemore')
+    parser.add_argument('--outdir', type=str, default='./features', help='Output directory for extracted features')
+    parser.add_argument('--checkpoint', type=str, required=True, help='Path to VideoMAEv2 model checkpoint (.pth)')
+    parser.add_argument('--video-root', type=str, default='', help='Root directory prepended to video paths')
     
     parser.add_argument('--encoder', type=str, default='vitl', choices=['vits', 'vitb', 'vitl', 'vitg'])
     
@@ -82,7 +84,7 @@ if __name__ == '__main__':
         tubelet_size=2,
         drop_path_rate=0.3,
         use_mean_pooling=True)
-    ckpt = torch.load('/data/stars/user/smajhi/AD/feature_extraction/RGB_feature/VidMAEV2/VideoMAEv2/ckpt/vit_g_hybrid_pt_1200e_k710_ft.pth', map_location=torch.device('cuda'))
+    ckpt = torch.load(args.checkpoint, map_location=torch.device('cuda'))
     for model_key in ['model', 'module']:
         if model_key in ckpt:
             ckpt = ckpt[model_key]
@@ -95,12 +97,7 @@ if __name__ == '__main__':
 
 
 
-    # Dinov2Model.from_pretrained("facebook/dinov2-base")
-    # depth_anything = DepthAnythingV2(**model_configs[args.encoder])
-    # depth_anything.load_state_dict(torch.load(f'/data/stars/user/smajhi/AD/feature_extraction/RGB_feature/Depth-Anything-V2/checkpoints/depth_anything_v2_{args.encoder}.pth', map_location='cpu'))
-    # depth_anything = depth_anything.to(DEVICE).eval()
-    
-    org_video_path ='/data/stars/user/mbalazia/datasets/'
+    org_video_path = args.video_root
     filenames = [args.video_path]
     '''
     if os.path.isfile(args.video_path):

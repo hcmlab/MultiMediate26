@@ -19,6 +19,11 @@ from keras_tuner import HyperModel
 from keras_tuner.tuners import Hyperband
 from tensorboard.plugins.hparams import api as hp
 
+# -------- Architecture Mode Flag --------
+# True  → train one independent model per label head (single-head)
+# False → train a joint model with multiple output heads (multi-head, default)
+SINGLE_HEAD_MODE = False
+
 # ----------------------- Argument Parsing --------------------------
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -120,6 +125,43 @@ class MultimediateHyperModelPinsoro(MultimediateHyperModelBase):
             metrics=['accuracy'] * len(outputs)
         )
         return model
+
+
+class MultimediateHyperModelPinsoroSingleHead(MultimediateHyperModelBase):
+    """Single classification head — train one independent model per label type."""
+    def build(self, hp):
+        x, inputs = super().build(hp)
+        out = layers.Dense(self.num_classes, activation='softmax', name='output')(x)
+        lr = hp.Choice('learning_rate', [1e-3, 1e-4])
+        hp.Choice('batch_size', [32, 64, 128, 256, 512, 1024, 2048], default=128)
+        model = models.Model(inputs=inputs, outputs=out)
+        model.compile(
+            optimizer=tf.keras.optimizers.Adam(learning_rate=lr),
+            loss='sparse_categorical_crossentropy',
+            metrics=['accuracy']
+        )
+        return model
+
+# --------------- Tuner metric helper ---------------
+def _last_metric(trial, name, project_dir=None):
+    """Return the last recorded value of a tuner metric, with optional disk fallback."""
+    try:
+        obs = trial.metrics.metrics[name].observations
+        last = obs[-1]
+        val = last['value'] if isinstance(last, dict) else last.value
+        return val[0] if hasattr(val, '__getitem__') else float(val)
+    except Exception:
+        pass
+    if project_dir is not None:
+        try:
+            trial_json = os.path.join(project_dir, f"trial_{trial.trial_id}", "trial.json")
+            with open(trial_json) as f:
+                t = json.load(f)
+            obs = t["metrics"]["metrics"].get(name, {}).get("observations", [])
+            return obs[-1]["value"][0] if obs else float('nan')
+        except Exception:
+            pass
+    return float('nan')
 
 # --------------- Data Loader ---------------
 def load_data_for_modality(train_dir, val_dir, modality, feat_dim, is_classification, dataset_config):

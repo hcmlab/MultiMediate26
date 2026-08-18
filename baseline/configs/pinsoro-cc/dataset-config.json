@@ -1,5 +1,6 @@
 {
   "task_type": "classification",
+  "default_language": "english",
   "label_heads": {
     "task_engagement":   {
         "num_classes": 4,

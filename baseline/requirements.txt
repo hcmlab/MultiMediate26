@@ -1,0 +1,13 @@
+# Baseline pipeline dependencies
+# Python 3.10 recommended (see env_gpu.yml for the full conda environment)
+
+pandas
+numpy>=1.20
+scipy
+scikit-learn
+matplotlib
+tensorflow
+keras-tuner
+tqdm
+tensorflow-probability
+tf-keras

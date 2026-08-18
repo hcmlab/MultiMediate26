@@ -66,7 +66,7 @@ This repository enables flexible experimentation through external config files a
 
 ---
 
-## 📁 Directory Structure
+## Directory Structure
 
 ````
 baseline/

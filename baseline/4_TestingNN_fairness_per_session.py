@@ -58,6 +58,41 @@ def fairness_language(
     return {lang: float(np.mean(vals)) for lang, vals in cdd_sum.items()}
 
 
+def fairness_gender_classification(
+    y: np.ndarray, y_pred: np.ndarray, gender: np.ndarray, num_classes: int
+) -> float:
+    """CDD_G for classification – mean difference M(pred_class|male) − M(pred_class|female) per true class."""
+    y, y_pred, gender = map(np.asarray, (y, y_pred, gender))
+    diffs: list[float] = []
+    for c in range(num_classes):
+        mask_m = (y == c) & (gender == 1)
+        mask_f = (y == c) & (gender == 0)
+        if mask_m.sum() == 0 or mask_f.sum() == 0:
+            continue
+        diffs.append(float(y_pred[mask_m].mean()) - float(y_pred[mask_f].mean()))
+    return float(np.mean(diffs)) if diffs else 0.0
+
+
+def fairness_language_classification(
+    y: np.ndarray, y_pred: np.ndarray, language: np.ndarray, num_classes: int
+) -> dict[str, float]:
+    """CDD_L for classification – per-language mean difference between language class mean and overall class mean."""
+    y, y_pred, language = map(np.asarray, (y, y_pred, language))
+    cdd_sum: dict[str, list[float]] = {}
+    for c in range(num_classes):
+        class_mask = y == c
+        if not class_mask.any():
+            continue
+        overall_mean = float(y_pred[class_mask].mean())
+        for lang in np.unique(language[class_mask]):
+            lang_mask = class_mask & (language == lang)
+            if lang_mask.sum() == 0:
+                continue
+            diff = float(y_pred[lang_mask].mean()) - overall_mean
+            cdd_sum.setdefault(lang, []).append(diff)
+    return {lang: float(np.mean(vals)) for lang, vals in cdd_sum.items()}
+
+
 # ---------------------------------------------------------------------------
 #                           UTILITY / METRIC HELPERS
 # ---------------------------------------------------------------------------
@@ -95,20 +130,28 @@ def _parse_gender(path: str | None, n: int) -> np.ndarray:
     arr = np.full(n, np.nan, dtype=np.float32)
     if path is None or not os.path.exists(path):
         return arr
-    vals: list[int] = []
+    vals: list[float] = []
     with open(path, encoding="utf-8") as fh:
         for ln in fh:
             parts = ln.strip().split(";")
             if len(parts) < 3:
                 continue
             try:
-                g = int(parts[2])
-                vals.append(0 if g == 2 else 1)  # 2→female(0), 1→male(1)
+                g = int(float(parts[2]))
+                vals.append(0.0 if g == 2 else 1.0)  # 2→female(0), 1→male(1)
             except ValueError:
                 vals.append(np.nan)
-    if len(vals) < n:
-        vals += [np.nan] * (n - len(vals))
-    return np.array(vals[:n], dtype=np.float32)
+    if not vals:
+        return arr
+    # Session-level annotation (e.g. one line covers the whole recording):
+    # broadcast the single value to all frames instead of padding with NaN.
+    if len(vals) < max(2, n // 10):
+        arr[:] = vals[0]
+    else:
+        if len(vals) < n:
+            vals += [np.nan] * (n - len(vals))
+        arr = np.array(vals[:n], dtype=np.float32)
+    return arr
 
 
 def load_data_with_sessions(root_dirs: List[str], modality: str, feat_dim: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -518,6 +561,81 @@ def load_classification_test_data_with_gt(feat_roots, gt_roots, modality, feat_d
             np.asarray(sessions))
 
 
+def load_classification_test_data_with_gt_fairness(feat_roots, gt_roots, modality, feat_dim, dataset_config,
+                                                    default_language="Unknown", role_filter=None):
+    """Like load_classification_test_data_with_gt but also returns language and gender arrays."""
+    feat_roots = feat_roots if isinstance(feat_roots, list) else [feat_roots]
+    gt_roots = gt_roots if isinstance(gt_roots, list) else [gt_roots]
+    X, y, sessions, lang, gender = [], [], [], [], []
+    for froot in feat_roots:
+        for groot in gt_roots:
+            sess_ids = [s for s in os.listdir(froot) if os.path.isdir(os.path.join(froot, s))]
+            for sess_id in sess_ids:
+                feat_dir = os.path.join(froot, sess_id)
+                gt_dir = os.path.join(groot, sess_id)
+                if not os.path.isdir(gt_dir):
+                    continue
+                language = _parse_language(os.path.join(gt_dir, "language.annotation.csv")) or default_language
+                for fname in os.listdir(feat_dir):
+                    if modality not in fname:
+                        continue
+                    role = fname.split('.')[0]
+                    if role_filter is not None and role != role_filter:
+                        continue
+                    feat_path = os.path.join(feat_dir, fname)
+                    gen_path_gt   = os.path.join(gt_dir,   f"{role}.gender.annotation.csv")
+                    gen_path_feat = os.path.join(feat_dir, f"{role}.gender.annotation.csv")
+                    gen_path = gen_path_gt if os.path.exists(gen_path_gt) else gen_path_feat
+                    anno_paths = {}
+                    skip = False
+                    for eng_type, head in dataset_config['label_heads'].items():
+                        anno_file = os.path.join(gt_dir, f"{role}{head['annotation_suffix']}")
+                        if not os.path.exists(anno_file):
+                            skip = True
+                            break
+                        anno_paths[eng_type] = anno_file
+                    if skip:
+                        continue
+                    try:
+                        a = np.fromfile(feat_path, dtype=np.float32).reshape(-1, feat_dim)
+                    except Exception as e:
+                        print(f"[Warning] Could not load {feat_path}: {e}")
+                        continue
+                    all_annos = {}
+                    for eng_type, path in anno_paths.items():
+                        try:
+                            with open(path, encoding='utf-8') as fh:
+                                all_annos[eng_type] = [ln.strip() for ln in fh]
+                        except UnicodeDecodeError:
+                            with open(path, encoding='latin1', errors='ignore') as fh:
+                                all_annos[eng_type] = [ln.strip() for ln in fh]
+                    n = min(len(a), *[len(v) for v in all_annos.values()])
+                    g_arr = _parse_gender(gen_path, n)
+                    for i in range(n):
+                        labels = []
+                        for eng_type, head in dataset_config['label_heads'].items():
+                            val = all_annos[eng_type][i]
+                            if val in ('', 'nan', '-nan(ind)'):
+                                labels.append(-1)
+                                continue
+                            idx = head['label_map'].get(val)
+                            labels.append(idx if idx is not None else -1)
+                        if all(lbl == -1 for lbl in labels):
+                            continue
+                        X.append(a[i])
+                        y.append(labels)
+                        sessions.append(sess_id)
+                        lang.append(language)
+                        gender.append(g_arr[i])
+    return (
+        np.asarray(X, np.float32),
+        np.asarray(y, np.int32),
+        np.asarray(sessions),
+        np.asarray(lang),
+        np.asarray(gender, np.float32),
+    )
+
+
 def parse_args():
     p = argparse.ArgumentParser(
         description="Evaluate engagement models with fairness metrics"
@@ -585,7 +703,11 @@ def main() -> None:
         if is_classification:
             Xtr, _, _ = load_classification_data_with_sessions(train_dirs, modality, feat_dim, dataset_config)
             Xva, _, _ = load_classification_data_with_sessions(val_dirs,   modality, feat_dim, dataset_config)
-            Xte, yte, test_sess = load_classification_test_data_with_gt(test_dirs, gt_dirs, modality, feat_dim, dataset_config)
+            Xte, yte, test_sess, lang_arr, gender_arr = load_classification_test_data_with_gt_fairness(
+                test_dirs, gt_dirs, modality, feat_dim, dataset_config,
+                default_language=dataset_config.get('default_language', 'Unknown'),
+                role_filter=role_filter,
+            )
 
             if Xte.size == 0:
                 msg = f"[Warning] No test data for {tag}, skipping."
@@ -606,18 +728,48 @@ def main() -> None:
             head_accs, head_kappas = [], []
             for h, (head_name, pred_probs) in enumerate(zip(head_names, preds)):
                 y_true = yte[:, h]
-                y_pred = np.argmax(pred_probs, axis=1)
+                y_pred_cls = np.argmax(pred_probs, axis=1)
                 valid = y_true >= 0
-                acc   = accuracy_score(y_true[valid], y_pred[valid])
-                kappa = cohen_kappa_score(y_true[valid], y_pred[valid])
+                acc   = accuracy_score(y_true[valid], y_pred_cls[valid])
+                kappa = cohen_kappa_score(y_true[valid], y_pred_cls[valid])
                 head_accs.append(acc)
                 head_kappas.append(kappa)
+
+                num_classes = dataset_config['label_heads'][head_name]['num_classes']
+                y_true_v   = y_true[valid]
+                y_pred_v   = y_pred_cls[valid]
+                gender_v   = gender_arr[valid]
+                lang_v     = lang_arr[valid]
+
+                mask_g = np.isfinite(gender_v)
+                cdd_g  = (fairness_gender_classification(
+                              y_true_v[mask_g], y_pred_v[mask_g], gender_v[mask_g], num_classes)
+                          if mask_g.any() else None)
+
+                mask_l = lang_v != "Unknown"
+                cdd_l  = (fairness_language_classification(
+                              y_true_v[mask_l], y_pred_v[mask_l], lang_v[mask_l], num_classes)
+                          if mask_l.any() else None)
+
                 line = f"[{head_name}] Accuracy: {acc:.4f}  Cohen's Kappa: {kappa:.4f}"
+                if cdd_g is not None:
+                    line += f"  CDD_G: {cdd_g:.6f}"
+                if cdd_l is not None:
+                    line += f"  CDD_L: {json.dumps(cdd_l)}"
                 print(line); summary_log.write(line + "\n")
                 np.save(os.path.join(out_dir, f"ypred_{tag}_{head_name}.npy"), pred_probs)
 
+                if cdd_g is not None:
+                    with open(os.path.join(out_dir, f"test_cdd_g_{tag}_{head_name}.txt"), "w") as f:
+                        f.write(str(cdd_g) + "\n")
+                if cdd_l is not None:
+                    with open(os.path.join(out_dir, f"test_cdd_l_{tag}_{head_name}.txt"), "w") as f:
+                        f.write(json.dumps(cdd_l) + "\n")
+
             np.save(os.path.join(out_dir, f"yte_{tag}.npy"), yte)
             np.save(os.path.join(out_dir, f"test_sessions_{tag}.npy"), test_sess)
+            np.save(os.path.join(out_dir, f"test_language_{tag}.npy"), lang_arr)
+            np.save(os.path.join(out_dir, f"test_gender_{tag}.npy"),   gender_arr)
             with open(os.path.join(out_dir, f"test_accuracy_{tag}.txt"), "w") as f:
                 for a in head_accs:
                     f.write(str(a) + "\n")

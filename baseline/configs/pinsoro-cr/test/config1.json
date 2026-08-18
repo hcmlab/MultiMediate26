@@ -6,9 +6,12 @@
     ".audio.w2vbert2_embeddings.stream~",
     ".xlm_roberta_embeddings.stream~",
     ".openface2.stream~",
-    ".openface3.stream~"
+    ".openface3.stream~",
+    ".swin.stream~",
+    ".videomae.stream~",
+    ".dino.stream~"
   ],
-  "modalities_dim": [88, 512, 139, 1024, 768, 714, 21],
+  "modalities_dim": [88, 512, 139, 1024, 768, 714, 21, 768, 1408, 768],
   "train_dir": "/mnt/data/pinsoro/train-cr/",
   "val_dir": "/mnt/data/pinsoro/val-cr/",
   "test_dir": "/mnt/data/pinsoro/test-cr/",
