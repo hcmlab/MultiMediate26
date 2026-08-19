@@ -53,6 +53,31 @@ We use the best performing model on each pinsoro subset for our classification t
 | &nbsp;&nbsp;XLM RoBERTa     | **0.1438**        | **0.1609**      | -0.0265           | 0.1044          | 0.0956     |
 
 
+
+## Test Set Results (CDD_G)
+
+Global Conditional Demographic Disparity (CDD) for Gender (CDD_G) on the pinsoro subsets, reported per engagement target.
+Values closer to 0 indicate less disparity; the sign indicates the direction of the disparity. While it shows higher values than for the regression task (as seen in MultiMediate'25), the CDD_G is calculated using categorical label predictions and should be interpreted with caution.
+
+| Feature set                 | Pinsoro-CC Social | Pinsoro-CC Task | Pinsoro-CR Social | Pinsoro-CR Task |
+| --------------------------- | ----------------- | --------------- | ----------------- | --------------- |
+| *Video*                     |                   |                 |                   |                 |
+| &nbsp;&nbsp;OpenFace 2.0    | 0.507752          | -0.670318       | -0.263529         | 0.464052        |
+| &nbsp;&nbsp;OpenFace 3.0    | 0.228690          | -0.524587       | -0.756035         | 0.507905        |
+| &nbsp;&nbsp;OpenPose        | 0.369051          | -0.175057       | -1.135412         | -0.532956       |
+| &nbsp;&nbsp;CLIP            | -0.642862         | 0.793529        | 0.225779          | 0.590486        |
+| &nbsp;&nbsp;DINO            | -1.221760         | 0.441415        | -0.457306         | 0.745108        |
+| &nbsp;&nbsp;SwinTransformer | -0.694572         | 0.357152        | -0.590268         | 0.567694        |
+| &nbsp;&nbsp;VideoMAE        | -0.844042         | 0.195072        | 0.532718          | 0.483792        |
+| *Voice*                     |                   |                 |                   |                 |
+| &nbsp;&nbsp;eGeMAPS v2      | 0.040014          | -0.130496       | 0.251175          | 0.039863        |
+| &nbsp;&nbsp;w2vBERT2        | 0.337442          | -0.330527       | -0.224748         | 0.006976        |
+| *Text*                      |                   |                 |                   |                 |
+| &nbsp;&nbsp;XLM RoBERTa     | 0.013098          | -0.160921       | -0.080272         | 0.235656        |
+
+CDD for Language was 0.0 for the only language group present (English) across all feature sets and both subsets.
+
+
 ## Feature Extraction
 
 Details on the feature extraction methods can be found under the feature_extraction directory in this repository.
@@ -81,19 +106,10 @@ baseline/
 ├── 4_TestingNN_fairness_per_session.py    # Step 4: Per-session fairness evaluation
 ├── 5_CreateResulttable.py                 # Step 5: Recompute metrics from predictions/GT and generate markdown result table
 │
-├── run_1_tuner_noxi.slurm                 # SLURM submission scripts for step 1
-├── run_1_tuner_noxi_j.slurm
-├── run_1_tuner_pinsoro.slurm
-├── run_1_tuner_pinsoro_cc.slurm
-├── run_1_tuner_pinsoro_cc_videomae.slurm
-├── run_1_tuner_pinsoro_cr.slurm
-├── run_2_full_trainer_noxi.slurm          # SLURM submission scripts for step 2
-├── run_2_full_trainer_noxij.slurm
-├── run_2_full_trainer_pinsoro.slurm
-├── run_2_full_trainer_pinsoro_cc.slurm
-├── run_2_full_trainer_pinsoro_cr.slurm
-├── run_3_test_plots.slurm
-├── run_4_test_fairness_allmod_psess.slurm
+├── run_1_tuner.slurm                      # SLURM script for step 1 (all datasets)
+├── run_2_full_trainer.slurm               # SLURM script for step 2 (all datasets)
+├── run_3_test_plots.slurm                 # SLURM script for step 3
+├── run_4_test_fairness_allmod_psess.slurm # SLURM script for step 4
 ├── run_all_1.sh ... run_all_4.sh          # Convenience scripts to submit all jobs
 │
 ├── configs/                               # Experiment configuration files (JSON)
@@ -136,6 +152,22 @@ baseline/
 
 Each SLURM script automatically creates or updates the conda environment from `env_gpu.yml` on first run.
 Edit the `env_name` variable at the top of any `.slurm` file to change the environment name.
+
+### C. Cluster paths
+
+All four `.slurm` files share the same three configuration variables at the top. Set these to match your HPC environment before submitting jobs:
+
+```bash
+CONDA_ROOT=/mnt/data/miniconda3            # Root of your Miniconda/Anaconda installation
+DATASET_ROOT=/mnt/datasets/MultiMediate/2026/public  # Where the raw datasets are stored
+LOCAL_DATA=/mnt/data                       # Fast local scratch space for rsync'd data
+```
+
+The dataset is inferred automatically from the config path (e.g. `configs/noxi-base/...` → syncs the `noxi` directory). Override SLURM resource requests directly on the `sbatch` command line if needed:
+
+```sh
+sbatch --mem=64G run_1_tuner.slurm configs/noxi-j/tune/config_clip.json
+```
 
 ---
 
@@ -226,7 +258,7 @@ The pipeline runs in 5 steps. Use the `run_all_*.sh` scripts to submit all jobs 
 bash run_all_1.sh
 
 # Or a single job:
-sbatch run_1_tuner_noxi.slurm configs/noxi-base/tune/config_audio_egemapsv2.json
+sbatch run_1_tuner.slurm configs/noxi-base/tune/config_audio_egemapsv2.json
 ```
 
 ### Step 1.1 — Extract tuning results
@@ -244,7 +276,7 @@ python 1.1_TuneResultExtraction.py
 bash run_all_2.sh
 
 # Or a single job:
-sbatch run_2_full_trainer_noxi.slurm configs/noxi-base/retrain/audio.egemapsv2.stream.json
+sbatch run_2_full_trainer.slurm configs/noxi-base/retrain/audio.egemapsv2.stream.json
 ```
 
 ### Step 2.1 — Extract retrain results
@@ -336,7 +368,11 @@ model = tf.keras.models.load_model(
 ## 8. Customization
 
 * Add tune configs in `configs/<dataset>/tune/` for new modalities or datasets.
-* Adjust GPU/CPU/memory requests at the top of any `.slurm` file.
+* Adjust GPU/CPU/memory requests at the top of any `.slurm` file, or override per-job with e.g. `sbatch --mem=64G run_1_tuner.slurm ...`.
+* To add a new dataset, add a `case` entry in `run_1_tuner.slurm` and `run_2_full_trainer.slurm` that maps the new dataset directory name to its source path:
+  ```bash
+  my-new-dataset) path_to_data="$DATASET_ROOT/my-new-dataset" ;;
+  ```
 * Modify model architecture or training logic in `1_TrainingNN_tuner.py` or `2_RetrainNN_full.py`.
 
 ---

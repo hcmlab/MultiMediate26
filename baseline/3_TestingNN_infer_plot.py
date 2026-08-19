@@ -12,7 +12,6 @@ from sklearn.metrics import (mean_squared_error, mean_absolute_error, r2_score,
                              accuracy_score, f1_score, confusion_matrix)
 import matplotlib.pyplot as plt
 
-# ---- CCC Metric ----
 def concordance_correlation_coefficient(y_true, y_pred):
     df = pd.DataFrame({'y_true': y_true, 'y_pred': y_pred}).dropna()
     y_true = df['y_true'].values
@@ -25,7 +24,7 @@ def concordance_correlation_coefficient(y_true, y_pred):
     denominator = var_true + var_pred + (mean_true - mean_pred) ** 2 + 1e-12
     return numerator / denominator
 
-# ---- Data Loader with Session Tracking ----
+
 def load_data_with_sessions(root_dir, modality, feat_dim):
     stream_map, anno_map = {}, {}
     for dirpath, _, files in os.walk(root_dir):
@@ -67,7 +66,7 @@ def load_data_with_sessions(root_dir, modality, feat_dim):
                 continue
     return np.array(X, dtype=np.float32), np.array(y, dtype=np.float32), np.array(session_list)
 
-# ---- Test Loader (Separate roots, session tracked) ----
+
 def load_test_data_with_gt(test_feat_root, gt_root, modality, feat_dim):
     X_list, y_list, session_list = [], [], []
     sessions = [s for s in os.listdir(test_feat_root)
@@ -109,7 +108,7 @@ def load_test_data_with_gt(test_feat_root, gt_root, modality, feat_dim):
                     continue
     return np.array(X_list, dtype=np.float32), np.array(y_list, dtype=np.float32), np.array(session_list)
 
-# ---- Data Reporting ----
+
 def report_data_stats(name, X, y, session_list, logfile, n_bins=20):
     log = []
     log.append(f"\n--- {name} Stats ---")
@@ -136,7 +135,7 @@ def report_data_stats(name, X, y, session_list, logfile, n_bins=20):
     logfile.flush()
     print("\n".join(log))
 
-# ---- Classification Data Loader ----
+
 def load_classification_data_with_sessions(root_dir, modality, feat_dim, dataset_config):
     stream_map, anno_map = {}, {}
     for dirpath, _, files in os.walk(root_dir):
@@ -188,7 +187,7 @@ def load_classification_data_with_sessions(root_dir, modality, feat_dim, dataset
             np.array(sessions))
 
 
-# ---- Classification Test Loader (Separate feat/gt roots, multi-head) ----
+
 def load_test_classification_data_with_gt(test_feat_root, gt_root, modality, feat_dim, dataset_config):
     X_list, y_list, session_list = [], [], []
     sessions = [s for s in os.listdir(test_feat_root)
@@ -280,7 +279,7 @@ def main():
         print(f"\n=== Testing modality {modality} ({feat_dim}-D) ===")
         summary_logfile.write(f"\n\n=== Modality: {modality} ({feat_dim}-D) ===\n")
 
-        # --- Classification path ---
+
         if is_classification:
             Xtr, _, _ = load_classification_data_with_sessions(train_dir, modality, feat_dim, dataset_config)
             Xva, _, _ = load_classification_data_with_sessions(val_dir, modality, feat_dim, dataset_config)

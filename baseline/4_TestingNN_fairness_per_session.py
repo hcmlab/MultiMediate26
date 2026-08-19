@@ -17,9 +17,6 @@ from sklearn.metrics import (mean_absolute_error, mean_squared_error, r2_score,
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
-# ---------------------------------------------------------------------------
-#                               FAIRNESS METRICS
-# ---------------------------------------------------------------------------
 
 def fairness_gender(y: np.ndarray, y_pred: np.ndarray, gender: np.ndarray, n_bins: int = 10) -> float:
     """CDD_G – mean difference M(pred|male) − M(pred|female) per y‑bin."""
@@ -93,10 +90,6 @@ def fairness_language_classification(
     return {lang: float(np.mean(vals)) for lang, vals in cdd_sum.items()}
 
 
-# ---------------------------------------------------------------------------
-#                           UTILITY / METRIC HELPERS
-# ---------------------------------------------------------------------------
-
 def concordance_correlation_coefficient(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Same implementation as the *old* script – no extra safeguards."""
     df = pd.DataFrame({"y_true": y_true, "y_pred": y_pred}).dropna()
@@ -113,10 +106,6 @@ def concordance_correlation_coefficient(y_true: np.ndarray, y_pred: np.ndarray) 
 def _ensure_list(x):
     return x if isinstance(x, (list, tuple)) else [x]
 
-
-# ---------------------------------------------------------------------------
-#                              DATA  LOADERS
-# ---------------------------------------------------------------------------
 
 def _parse_language(path: str | None) -> str | None:
     if path is None or not os.path.exists(path):
@@ -304,9 +293,6 @@ def save_sessionwise_predictions_testgt(
                     out_path = os.path.join(out_dir, f"{role}.engagement.annotation.csv")
                     np.savetxt(out_path, y_pred, fmt="%.6f")
 
-# ---------------------------------------------------------------------------
-#              TEST PREDICTION FILE SAVERS (annotation-mirrored)
-# ---------------------------------------------------------------------------
 
 def save_test_predictions_regression(feat_roots, gt_roots, modality, feat_dim, scaler, model, out_dir,
                                      role_filter=None):
@@ -422,9 +408,7 @@ def save_test_predictions_classification(feat_roots, gt_roots, modality, feat_di
                             fh.write('\n'.join(pred_labels) + '\n')
 
 
-# ---------------------------------------------------------------------------
-#                                 MAIN
-# ---------------------------------------------------------------------------
+
 def canonical(mod_name: str) -> str:
     return mod_name.lstrip(".").rstrip("~")
 
@@ -445,9 +429,6 @@ def _dataset_name_from_config(config_path: str) -> str:
         folder = pathlib.Path(config_path).parent.parent.name
     return _DATASET_FOLDER_MAP.get(folder, folder)
 
-# ---------------------------------------------------------------------------
-#                     CLASSIFICATION DATA LOADER
-# ---------------------------------------------------------------------------
 
 def load_classification_data_with_sessions(root_dirs, modality, feat_dim, dataset_config):
     X, y, sessions = [], [], []

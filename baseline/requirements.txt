@@ -1,4 +1,5 @@
 # Baseline pipeline dependencies
+# (Originally used: env_gpu.yml)
 # Python 3.10 recommended (see env_gpu.yml for the full conda environment)
 
 pandas

@@ -16,10 +16,15 @@ fi
 
 CONFIG_FILE=$1
 
+# Adjust these three variables to match your HPC environment
+CONDA_ROOT=/mnt/data/miniconda3
+DATASET_ROOT=/mnt/datasets/MultiMediate/2026/public
+LOCAL_DATA=/mnt/data
+
 env_name="mmslurm63"
 path_to_project="$(pwd)"
 path_to_env_yml=$path_to_project/env_gpu.yml
-path_to_env_dst=/mnt/data/miniconda3/envs/$env_name
+path_to_env_dst=$CONDA_ROOT/envs/$env_name
 
 echo "Date              = $(date)"
 echo "Hostname          = $(hostname -s)"
@@ -29,7 +34,7 @@ echo ""
 echo "Setting up conda environment named $env_name using $path_to_env_yml ..."
 echo ""
 
-source /mnt/data/miniconda3/bin/activate
+source $CONDA_ROOT/bin/activate
 
 conda env list
 echo ""
@@ -57,10 +62,10 @@ pip install matplotlib
 pip install tensorflow[and-cuda]
 
 # Syncing the datasets
-rsync -havzP --stats --delete /mnt/datasets/MultiMediate/2026/public/noxi /mnt/data/
-rsync -havzP --stats --delete /mnt/datasets/MultiMediate/2026/public/noxi-j /mnt/data/
-rsync -havzP --stats --delete /mnt/datasets/MultiMediate/2026/public/pinsoro /mnt/data/
-rsync -havzP --stats --delete /mnt/datasets/MultiMediate/2026/public/mpiigroupinteraction /mnt/data/
+rsync -havzP --stats --delete $DATASET_ROOT/noxi $LOCAL_DATA/
+rsync -havzP --stats --delete $DATASET_ROOT/noxi-j $LOCAL_DATA/
+rsync -havzP --stats --delete $DATASET_ROOT/pinsoro $LOCAL_DATA/
+rsync -havzP --stats --delete $DATASET_ROOT/mpiigroupinteraction $LOCAL_DATA/
 
 # Derive results dir from dataset name in config path
 # e.g. configs/noxi-base/test/config1.json -> results/noxi-base/full_test_fairness

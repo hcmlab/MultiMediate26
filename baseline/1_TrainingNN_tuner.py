@@ -19,19 +19,20 @@ from keras_tuner import HyperModel
 from keras_tuner.tuners import Hyperband
 from tensorboard.plugins.hparams import api as hp
 
-# -------- Architecture Mode Flag --------
-# True  → train one independent model per label head (single-head)
-# False → train a joint model with multiple output heads (multi-head, default)
+# -------- Architecture Flag --------
+# True : train one independent model per label head (single-head)
+# False : train a joint model with multiple output heads (multi-head, default)
+# THIS IS IMPORTANT ONLY FOR PINSORO!
 SINGLE_HEAD_MODE = False
 
-# ----------------------- Argument Parsing --------------------------
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True,
                         help="Path to JSON config file")
     return parser.parse_args()
 
-# ----------------------- Config Loading --------------------------
+
 def load_config(path):
     with open(path, 'r') as f:
         return json.load(f)
@@ -44,7 +45,7 @@ HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.0, 0.5))
 HP_BATCH_SIZE = hp.HParam('batch_size', hp.Discrete([32, 64, 128, 256, 512, 1024, 2048]))
 HP_LR = hp.HParam('learning_rate', hp.Discrete([1e-3, 1e-4]))
 
-# --------------- Concordance Correlation Coefficient ---------------
+
 def concordance_correlation_coefficient(y_true, y_pred):
     df = pd.DataFrame({'y_true': y_true, 'y_pred': y_pred}).dropna()
     y_true = df['y_true'].values
@@ -57,7 +58,7 @@ def concordance_correlation_coefficient(y_true, y_pred):
     denominator = var_true + var_pred + (mean_true - mean_pred)**2 + 1e-12
     return numerator / denominator
 
-# --------------- KerasTuner + batch size ---------------
+
 class MyTuner(Hyperband):
     def run_trial(self, trial, *args, **kwargs):
         hp = trial.hyperparameters
@@ -65,7 +66,7 @@ class MyTuner(Hyperband):
         kwargs['batch_size'] = batch_size
         return super().run_trial(trial, *args, **kwargs)
 
-# --------------- HyperModel ---------------
+
 class MultimediateHyperModelBase(HyperModel):
     def __init__(self, input_shape, num_classes=1):
         self.input_shape = input_shape
@@ -142,7 +143,7 @@ class MultimediateHyperModelPinsoroSingleHead(MultimediateHyperModelBase):
         )
         return model
 
-# --------------- Tuner metric helper ---------------
+
 def _last_metric(trial, name, project_dir=None):
     """Return the last recorded value of a tuner metric, with optional disk fallback."""
     try:
@@ -163,7 +164,7 @@ def _last_metric(trial, name, project_dir=None):
             pass
     return float('nan')
 
-# --------------- Data Loader ---------------
+
 def load_data_for_modality(train_dir, val_dir, modality, feat_dim, is_classification, dataset_config):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
@@ -266,7 +267,6 @@ def load_all_continuous_annos(anno_map,stream_map,X,y,feat_dim):
             X.append(a[i])
             y.append(y_val)
 
-# --------------- MAIN -------------------
 def main():
     args = parse_args()
     config = load_config(args.config)
@@ -424,7 +424,7 @@ def main():
         reduce_lr = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=1 if DEBUG_MODE else 2)
         tb_callback_tuner = tf.keras.callbacks.TensorBoard(log_dir=tuner_tb_logdir)
 
-        # ----------- LOAD OR TUNE HYPERPARAMETERS -------------
+
         if os.path.exists(best_hparams_path):
             logmsg(f"Loading best hyperparameters for {modality} from {best_hparams_path}")
             with open(best_hparams_path, 'r') as f:
@@ -493,7 +493,6 @@ def main():
 
         best_batch_size = best_hps.get('batch_size')
 
-        # ------------ HParams logging for TensorBoard ------------
         with tf.summary.create_file_writer(final_tb_logdir).as_default():
             hp.hparams({
                 HP_UNITS1: best_hps.get('units1'),

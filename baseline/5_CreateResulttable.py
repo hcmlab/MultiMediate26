@@ -10,10 +10,6 @@ from pathlib import Path
 import numpy as np
 
 
-# ---------------------------------------------------------------------------
-#                         DATASET / MODALITY CONSTANTS
-# ---------------------------------------------------------------------------
-
 REGRESSION_DATASETS: list[tuple[str, str]] = [
     ("noxi-base",            "NOXI"),
     ("test-additional",      "NOXI (Add.)"),
@@ -40,7 +36,6 @@ MODALITY_ORDER: list[tuple[str, str, str]] = [
     ("xlm_roberta_embeddings.stream",    "Text",  "XLM RoBERTa"),
 ]
 
-# Maps dataset key -> subdirectory within gt_root
 GT_SUBDIR: dict[str, str] = {
     "noxi-base":            "noxi/test-base",
     "test-additional":      "noxi/test-additional",
@@ -50,7 +45,7 @@ GT_SUBDIR: dict[str, str] = {
     "pinsoro-cr":           "pinsoro/test-cr",
 }
 
-# Maps dataset key -> folder name in test_prediction_files/
+# Maps dataset key names and folder name in test_prediction_files/
 # (only entries that differ from the key)
 PRED_FOLDER: dict[str, str] = {
     "test-additional": "noxi-additional",
@@ -64,10 +59,6 @@ def _pred_folder(ds_key: str) -> str:
 def _mod_tag(mod_key: str) -> str:
     return mod_key.strip(".~")
 
-
-# ---------------------------------------------------------------------------
-#                              METRIC FUNCTIONS
-# ---------------------------------------------------------------------------
 
 def _ccc(x: np.ndarray, y: np.ndarray) -> float:
     """CCC matching main.py's formula exactly (no epsilon)."""
@@ -102,10 +93,6 @@ def _cohen_kappa(y_true: list[str], y_pred: list[str]) -> float:
     return (po - pe) / (1.0 - pe)
 
 
-# ---------------------------------------------------------------------------
-#                              CSV READERS
-# ---------------------------------------------------------------------------
-
 def _read_raw_lines(path: Path) -> list[str]:
     """Read every line of a file, stripping whitespace but keeping empty lines."""
     try:
@@ -127,10 +114,6 @@ def _read_floats(path: Path) -> np.ndarray:
             vals.append(float("nan"))
     return np.asarray(vals, dtype=np.float32)
 
-
-# ---------------------------------------------------------------------------
-#                         REGRESSION METRICS
-# ---------------------------------------------------------------------------
 
 def compute_regression_metrics(
     gt_root: Path, pred_root: Path, ds_key: str, tag: str
@@ -187,9 +170,6 @@ def compute_regression_metrics(
     }
 
 
-# ---------------------------------------------------------------------------
-#                       CLASSIFICATION METRICS
-# ---------------------------------------------------------------------------
 
 def compute_classification_metrics(
     gt_root: Path, pred_root: Path, ds_key: str, tag: str
@@ -295,9 +275,6 @@ def _discover_clf_heads(gt_root: Path) -> list[str]:
     return sorted(heads)
 
 
-# ---------------------------------------------------------------------------
-#                           TABLE RENDERING
-# ---------------------------------------------------------------------------
 
 def _mean_finite(values: list) -> float:
     valid = [v for v in values if v is not None and not math.isnan(v)]
@@ -379,10 +356,6 @@ def _render_md_table(col_headers: list[str], rows: list[tuple]) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
-#                           TABLE BUILDERS
-# ---------------------------------------------------------------------------
-
 def build_regression_table(gt_root: Path, pred_root: Path) -> str:
     col_headers = [label for _, label in REGRESSION_DATASETS] + ["Combined"]
     rows = []
@@ -436,9 +409,6 @@ def build_classification_table(
     return _render_md_table(col_headers, rows)
 
 
-# ---------------------------------------------------------------------------
-#                                  MAIN
-# ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

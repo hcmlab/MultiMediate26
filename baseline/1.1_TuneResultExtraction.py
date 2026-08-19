@@ -17,10 +17,6 @@ from pathlib import Path
 from collections import defaultdict
 
 
-# ---------------------------------------------------------------------------
-# Markdown table configuration (mirrors 5_combine_results.py)
-# ---------------------------------------------------------------------------
-
 REGRESSION_DATASETS: list[tuple[str, str]] = [
     ("noxi",                 "NOXI"),
     ("test-additional",      "NOXI (Add.)"),
@@ -48,10 +44,6 @@ MODALITY_ORDER: list[tuple[str, str, str]] = [
     ("xlm_roberta_embeddings.stream",    "Text",  "XLM RoBERTa"),
 ]
 
-
-# ---------------------------------------------------------------------------
-# Markdown helpers
-# ---------------------------------------------------------------------------
 
 def _mean_finite(values: list) -> float:
     valid = [v for v in values if v is not None and not math.isnan(v)]

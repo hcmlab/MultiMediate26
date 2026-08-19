@@ -22,14 +22,13 @@ from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score
 
 from keras import layers, models
 
-# ---------------- Argument Parsing --------------------
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, required=True,
                         help="Path to per-feature JSON config file")
     return parser.parse_args()
 
-# --------------- Concordance Correlation Coefficient ---------------
+
 def concordance_correlation_coefficient(y_true, y_pred):
     df = pd.DataFrame({'y_true': y_true, 'y_pred': y_pred}).dropna()
     y_true = df['y_true'].values
@@ -42,12 +41,11 @@ def concordance_correlation_coefficient(y_true, y_pred):
     denominator = var_true + var_pred + (mean_true - mean_pred)**2 + 1e-12
     return numerator / denominator
 
-# ----------------- Config Loading ---------------------
+
 def load_config(path):
     with open(path, 'r') as f:
         return json.load(f)
 
-# ------------------ Data Loader -----------------------
 def load_data_for_modality(train_dir, val_dir, modality, feat_dim):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
@@ -92,7 +90,6 @@ def load_data_for_modality(train_dir, val_dir, modality, feat_dim):
     yfull = np.concatenate([ytr, yva], axis=0)
     return Xfull, yfull, Xva, yva
 
-# --------------- Model Construction -------------------
 def build_model(input_shape, hps):
     model = models.Sequential()
     model.add(layers.Dense(hps["units1"], activation='relu', input_shape=(input_shape,)))
@@ -107,7 +104,7 @@ def build_model(input_shape, hps):
     )
     return model
 
-# --------------- Classification Support ---------------
+
 def load_classification_data(train_dir, val_dir, modality, feat_dim, dataset_config):
     def walk_and_load(root_dir):
         stream_map, anno_map = {}, {}
@@ -188,7 +185,7 @@ _TRAIN_DIR_TO_DATASET = {
     "/mnt/data/pinsoro/train-cr/": "pinsoro-cr",
 }
 
-# ----------------- Main Routine -----------------------
+# ----------------- Main-----------------------
 def main():
     args = parse_args()
     config = load_config(args.config)
@@ -246,7 +243,6 @@ def main():
 
         hps = best_hps_dict[modality]
 
-        # --- Classification path ---
         if is_classification:
             Xfull, yfull, Xva, yva = load_classification_data(train_dir, val_dir, modality, feat_dim, dataset_config)
             logmsg(f"Loaded shapes: Xfull={Xfull.shape}, yfull={yfull.shape}")

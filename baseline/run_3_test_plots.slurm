@@ -16,14 +16,19 @@ fi
 
 CONFIG_FILE=$1
 
+# Adjust these three variables to match your HPC environment
+CONDA_ROOT=/mnt/data/miniconda3
+DATASET_ROOT=/mnt/datasets/MultiMediate/2026/public
+LOCAL_DATA=/mnt/data
+
 env_name="mmslurm63"
 path_to_project="$(pwd)"
 path_to_env_yml=$path_to_project/env_gpu.yml
-path_to_env_dst=/mnt/data/miniconda3/envs/$env_name
-path_to_data=/mnt/datasets/MultiMediate/2026/public/noxi
-path_to_data_noxij=/mnt/datasets/MultiMediate/2026/public/noxi-j
-path_to_data_pinsoro=/mnt/datasets/MultiMediate/2026/public/pinsoro
-path_to_data_mpii=/mnt/datasets/MultiMediate/2026/public/mpiigroupinteraction
+path_to_env_dst=$CONDA_ROOT/envs/$env_name
+path_to_data=$DATASET_ROOT/noxi
+path_to_data_noxij=$DATASET_ROOT/noxi-j
+path_to_data_pinsoro=$DATASET_ROOT/pinsoro
+path_to_data_mpii=$DATASET_ROOT/mpiigroupinteraction
 
 echo "Date              = $(date)"
 echo "Hostname          = $(hostname -s)"
@@ -33,7 +38,7 @@ echo ""
 echo "Setting up conda environment named $env_name using $path_to_env_yml ..."
 echo ""
 
-source /mnt/data/miniconda3/bin/activate
+source $CONDA_ROOT/bin/activate
 
 conda env list
 echo ""
@@ -61,10 +66,10 @@ pip install matplotlib
 pip install tensorflow[and-cuda]
 
 # Syncing the datasets
-rsync -havzP --stats --delete $path_to_data /mnt/data/
-rsync -havzP --stats --delete $path_to_data_noxij /mnt/data/
-rsync -havzP --stats --delete $path_to_data_pinsoro /mnt/data/
-rsync -havzP --stats --delete $path_to_data_mpii /mnt/data/
+rsync -havzP --stats --delete $path_to_data $LOCAL_DATA/
+rsync -havzP --stats --delete $path_to_data_noxij $LOCAL_DATA/
+rsync -havzP --stats --delete $path_to_data_pinsoro $LOCAL_DATA/
+rsync -havzP --stats --delete $path_to_data_mpii $LOCAL_DATA/
 
 # Derive results dir from dataset name in config path
 # e.g. configs/noxi-base/test/config1.json -> results/noxi-base/full_test_predictions_plots
