@@ -346,18 +346,7 @@ tail -f logs/<jobname>-<jobid>.log
 
 ---
 
-## 6. Loading Saved Models
-
-```python
-import tensorflow as tf
-model = tf.keras.models.load_model(
-    ‘results/full_models/retrained_full_nn_model_audio.egemapsv2.stream.keras’
-)
-```
-
----
-
-## 7. Troubleshooting
+## 6. Troubleshooting
 
 * If `module: command not found`, check your cluster’s module system documentation.
 * If jobs fail, check resource requests and verify data/config paths in the JSON files.
@@ -365,7 +354,7 @@ model = tf.keras.models.load_model(
 
 ---
 
-## 8. Customization
+## 7. Customization
 
 * Add tune configs in `configs/<dataset>/tune/` for new modalities or datasets.
 * Adjust GPU/CPU/memory requests at the top of any `.slurm` file, or override per-job with e.g. `sbatch --mem=64G run_1_tuner.slurm ...`.
@@ -377,13 +366,8 @@ model = tf.keras.models.load_model(
 
 ---
 
-## 9. Contact
 
-For questions, please consult the authors of the MultiMediate Challenge.
-https://multimediate-challenge.org/
-
-
-## Citation
+## 8. Citation
 
 Please consider citing us if you are using our results!
 ```
@@ -411,6 +395,14 @@ doi = {10.1145/3767308.3837718},
 url = {https://doi.org/10.1145/3767308.3837718}
 }
 ```
+
+---
+
+## 9. Contact
+
+For questions, please consult the authors of the MultiMediate Challenge.
+https://multimediate-challenge.org/
+
 
 ---
 
