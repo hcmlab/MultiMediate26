@@ -1,6 +1,6 @@
 # Baseline Repository for the MultiMediate'26 Cross-cultural Multi-domain Engagement Estimation Task
 
-In this repository, we share the baseline implementation, baseline results, as well as code for feature extraction.
+In this repository, we share the baseline implementation, baseline results, as well as code for feature extraction for the MultiMediate'26 Engagement Estimation Challenge. For the corresponding paper introducing all terminology, please refer to https://doi.org/10.1145/3767308.3837718. 
 
 ## Baseline Results
 
@@ -22,7 +22,7 @@ We use the best performing model on the test set for our baseline performance.
 | &nbsp;&nbsp;SwinTransformer | 0.5406     | 0.4649      | 0.2627     | -0.0482    | 0.3050     |
 | &nbsp;&nbsp;VideoMAE        | 0.6065     | 0.5602      | 0.2168     | 0.0173     | 0.3502     |
 | *Voice*                     |            |             |            |            |            |
-| &nbsp;&nbsp;eGeMAPS v2      | **0.5535** | **0.4909**  | **0.3132** | **0.4539** | **0.4529** |
+| &nbsp;&nbsp;eGeMAPs v2      | **0.5535** | **0.4909**  | **0.3132** | **0.4539** | **0.4529** |
 | &nbsp;&nbsp;w2vBERT2        | 0.5986     | 0.4710      | 0.3178     | 0.0540     | 0.3604     |
 | *Text*                      |            |             |            |            |            |
 | &nbsp;&nbsp;XLM RoBERTa     | 0.3916     | 0.2698      | 0.2553     | 0.0090     | 0.2314     |
@@ -47,7 +47,7 @@ We use the best performing model on each pinsoro subset for our classification t
 | &nbsp;&nbsp;SwinTransformer | 0.0905            | 0.0844          | **0.0901**        | **0.2426**          | **0.1269** |
 | &nbsp;&nbsp;VideoMAE        | 0.1436            | 0.1347          | -0.0191           | 0.0465          | 0.0764     |
 | *Voice*                     |                   |                 |                   |                 |            |
-| &nbsp;&nbsp;eGeMAPS v2      | 0.1320            | 0.0207          | -0.0188           | -0.0262         | 0.0269     |
+| &nbsp;&nbsp;eGeMAPs v2      | 0.1320            | 0.0207          | -0.0188           | -0.0262         | 0.0269     |
 | &nbsp;&nbsp;w2vBERT2        | 0.1089            | 0.0549          | 0.0032            | 0.0262          | 0.0483     |
 | *Text*                      |                   |                 |                   |                 |            |
 | &nbsp;&nbsp;XLM RoBERTa     | **0.1438**        | **0.1609**      | -0.0265           | 0.1044          | 0.0956     |
@@ -57,7 +57,7 @@ We use the best performing model on each pinsoro subset for our classification t
 ## Test Set Results (CDD_G)
 
 Global Conditional Demographic Disparity (CDD) for Gender (CDD_G) on the pinsoro subsets, reported per engagement target.
-Values closer to 0 indicate less disparity; the sign indicates the direction of the disparity. While it shows higher values than for the regression task (as seen in MultiMediate'25), the CDD_G is calculated using categorical label predictions and should be interpreted with caution.
+Values closer to 0 indicate less disparity; the sign indicates the direction of the disparity. While it shows higher values than for the regression task (as seen in MultiMediate'25), the CDD_G is calculated using categorical label predictions and is therefore not directly comparable to the MultiMediate'25 (https://dl.acm.org/doi/pdf/10.1145/3746027.3762076) CDD results for the regression task.
 
 | Feature set                 | Pinsoro-CC Social | Pinsoro-CC Task | Pinsoro-CR Social | Pinsoro-CR Task |
 | --------------------------- | ----------------- | --------------- | ----------------- | --------------- |
@@ -70,7 +70,7 @@ Values closer to 0 indicate less disparity; the sign indicates the direction of 
 | &nbsp;&nbsp;SwinTransformer | -0.694572         | 0.357152        | -0.590268         | 0.567694        |
 | &nbsp;&nbsp;VideoMAE        | -0.844042         | 0.195072        | 0.532718          | 0.483792        |
 | *Voice*                     |                   |                 |                   |                 |
-| &nbsp;&nbsp;eGeMAPS v2      | 0.040014          | -0.130496       | 0.251175          | 0.039863        |
+| &nbsp;&nbsp;eGeMAPs v2      | 0.040014          | -0.130496       | 0.251175          | 0.039863        |
 | &nbsp;&nbsp;w2vBERT2        | 0.337442          | -0.330527       | -0.224748         | 0.006976        |
 | *Text*                      |                   |                 |                   |                 |
 | &nbsp;&nbsp;XLM RoBERTa     | 0.013098          | -0.160921       | -0.080272         | 0.235656        |
@@ -379,7 +379,38 @@ model = tf.keras.models.load_model(
 
 ## 9. Contact
 
-For questions, consult your cluster admin or the script author.
+For questions, please consult the authors of the MultiMediate Challenge.
+https://multimediate-challenge.org/
+
+
+## Citation
+
+Please consider citing us if you are using our results!
+```
+DOI: 10.1145/3767308.3837718
+```
+
+```bibtex
+@inproceedings{funk2026multimediate,
+author = {Funk, Marius and Withanage Don, Daksitha and Balazia, Michal and
+Oei, Victor and Okada, Shogo and Br{\'e}mond, Fran{\c{c}}ois and
+Bulling, Andreas and Andr{\'e}, Elisabeth and M{\"u}ller, Philipp},
+title = {Engagement Estimation in Human-Robot and Human-Human Interactions
+across Domain, Age and Culture: The {MultiMediate} '26 Challenge},
+booktitle = {Proceedings of the 34th ACM International Conference on Multimedia},
+series = {MM '26},
+year = {2026},
+month = nov,
+location = {Rio de Janeiro, Brazil},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+pages = {1--6},
+numpages = {6},
+isbn = {979-8-4007-2213-4},
+doi = {10.1145/3767308.3837718},
+url = {https://doi.org/10.1145/3767308.3837718}
+}
+```
 
 ---
 
