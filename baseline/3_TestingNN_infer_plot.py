@@ -428,7 +428,7 @@ def main():
             f.write(f"Test R2: {r2:.6f}\n")
             f.write(f"Model used: {model_file}\n")
 
-        # --- Diagnostic Plots ---
+        # --- Plots ---
         plt.figure()
         plt.scatter(yte, ypred, alpha=0.4, s=5)
         plt.xlabel('True Engagement')
